@@ -4,6 +4,8 @@ from datetime import date
 import textwrap
 import warnings
 import uuid
+import google.generativeai as genai
+
 
 # Importações do Google ADK e GenAI DEVEM ESTAR AQUI, ANTES DAS FUNÇÕES
 from google.adk.agents import Agent
