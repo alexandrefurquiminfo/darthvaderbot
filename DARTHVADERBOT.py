@@ -34,6 +34,8 @@ st.set_page_config(page_title="DarthVaderBot", page_icon="🤖")
 st.title("DarthVaderBot 🌑")
 st.markdown("Eu sou seu pai... e estou aqui para buscar conhecimento na galáxia para você.")
 
+# Acessar a instância global
+SESSION_SERVICE_INSTANCE = st.session_state.adk_session_service
 
 # --- Carregamento da API Key ---
 # (Seu código de carregamento de API Key aqui)
