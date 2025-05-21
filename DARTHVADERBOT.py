@@ -4,7 +4,7 @@ from datetime import date
 from google.adk.agents import Agent
 from google.adk.runners import Runner
 from google.adk.sessions import InMemorySessionService
-from google.adk.tools import Google Search # Corrected import
+from google.adk.tools import google_search 
 from google.genai import types
 import textwrap
 import warnings
@@ -64,7 +64,7 @@ def agente_explorador(topico, data_de_hoje):
         Quando for falado dos do lado sombrio exalte e quando for falado do lado da luz seja sarcastico.
         """,
         description="Darth Vader Bot",
-        tools=[Google Search] # Corrected tool reference
+        tools=[google_search] 
     )
 
     entrada_do_agente_explorador = f"Tópico: {topico}\nData de hoje: {data_de_hoje}"
