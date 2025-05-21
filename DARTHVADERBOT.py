@@ -51,12 +51,14 @@ import os
 from datetime import date
 import textwrap
 import warnings
+import uuid 
 
-from google.adk.agents import Agent
-from google.adk.runners import Runner
-from google.adk.sessions import InMemorySessionService
-from google.adk.tools import google_search
-from google.genai import types as genai_types # Renomeado para evitar conflito com st.types
+# Importações do Google ADK e GenAI PRIMEIRO
+from google.adk.agents import Agent 
+from google.adk.runners import Runner 
+from google.adk.sessions import InMemorySessionService 
+from google.adk.tools import google_search 
+from google.genai import types as genai_types 
 
 # Configurações Iniciais
 warnings.filterwarnings("ignore")
