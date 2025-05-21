@@ -1,109 +1,124 @@
 import streamlit as st
 import os
 from datetime import date
-from google.adk.agents import Agent
-from google.adk.runners import Runner
-from google.adk.sessions import InMemorySessionService
-from google.adk.tools import google_search 
-from google.genai import types
 import textwrap
 import warnings
 
-# Suppress warnings for a cleaner output in Streamlit
+from google.adk.agents import Agent
+from google.adk.runners import Runner
+from google.adk.sessions import InMemorySessionService
+from google.adk.tools import google_search
+from google.genai import types as genai_types # Renomeado para evitar conflito com st.types
+
+# Configurações Iniciais
 warnings.filterwarnings("ignore")
 
-# Set up Google API Key from Streamlit secrets
-os.environ["GOOGLE_API_KEY"] = st.secrets["GOOGLE_API_KEY"]
+# Título e descrição do App
+st.set_page_config(page_title="DarthVaderBot", page_icon="🤖")
+st.title("DarthVaderBot 🌑")
+st.markdown("Eu sou seu pai... e estou aqui para buscar conhecimento na galáxia para você.")
 
-def to_markdown(text):
-    text = text.replace('•', '  *')
-    return textwrap.indent(text, '> ', predicate=lambda _: True)
+# --- Carregamento da API Key ---
+# Para rodar localmente com secrets.toml
+try:
+    os.environ["GOOGLE_API_KEY"] = st.secrets["GOOGLE_API_KEY"]
+except FileNotFoundError:
+    st.error("Arquivo secrets.toml não encontrado. Crie .streamlit/secrets.toml com sua GOOGLE_API_KEY.")
+    st.stop()
+except KeyError:
+    st.error("GOOGLE_API_KEY não encontrada no secrets.toml. Adicione-a.")
+    st.stop()
+
+if not os.getenv("GOOGLE_API_KEY"):
+    st.error("GOOGLE_API_KEY não está configurada. Verifique seus segredos.")
+    st.stop()
+
+# --- Funções do Agente (adaptadas do seu notebook) ---
 
 def call_agent(agent: Agent, message_text: str) -> str:
-    # Always create a new InMemorySessionService for each call to ensure isolation
-    # or consider using st.session_state to store a session_service if you want conversation history
-    # For now, let's keep it simple to fix the error:
     session_service = InMemorySessionService()
-
-    # Use a dynamic session ID if you want to track different user conversations
-    # For a single user, 'user1' and 'session1' is fine, but for multiple users
-    # on Streamlit Cloud, you'd need unique IDs per user.
-    # For testing, 'user1' and 'session1' is acceptable.
-    app_name = agent.name
-    user_id = "user1"
-    session_id = "session1" # You could make this dynamic for true multi-user history
-
-    # Ensure the session is created or retrieved
-    try:
-        session = session_service.get_session(app_name=app_name, user_id=user_id, session_id=session_id)
-    except Exception: # If session doesn't exist, create it
-        session = session_service.create_session(app_name=app_name, user_id=user_id, session_id=session_id)
-
-    runner = Runner(agent=agent, app_name=app_name, session_service=session_service)
-    content = types.Content(role="user", parts=[types.Part(text=message_text)])
+    session = session_service.create_session(app_name=agent.name, user_id="streamlit_user", session_id="streamlit_session")
+    runner = Runner(agent=agent, app_name=agent.name, session_service=session_service)
+    content = genai_types.Content(role="user", parts=[genai_types.Part(text=message_text)])
 
     final_response = ""
-    # Ensure to iterate through events to get the final response
-    for event in runner.run(user_id=user_id, session_id=session_id, new_message=content):
-        if event.is_final_response():
-            for part in event.content.parts:
-                if part.text is not None:
-                    final_response += part.text
-                    final_response += "\n"
+    try:
+        for event in runner.run(user_id="streamlit_user", session_id="streamlit_session", new_message=content):
+            if event.is_final_response():
+                for part in event.content.parts:
+                    if part.text is not None:
+                        final_response += part.text
+                        final_response += "\n"
+    except Exception as e:
+        st.error(f"Erro ao executar o agente: {e}")
+        return "Lorde Vader está enfrentando interferências na Força... Tente novamente mais tarde."
     return final_response
 
-def agente_explorador(topico, data_de_hoje):
+def agente_explorador(topico: str, data_de_hoje: str) -> str:
+    # Use um nome de modelo válido. "gemini-2.0-flash" não é um modelo público.
+    # "gemini-pro" ou "gemini-1.5-flash-latest" são boas opções.
+    # Vou usar "gemini-pro" como padrão. Se "gemini-2.0-flash" é um modelo específico que você tem acesso,
+    # você pode tentar usá-lo, mas pode não funcionar no ambiente do Streamlit Cloud.
+    MODEL_NAME = "gemini-pro" # Ou "gemini-1.5-flash-latest"
+
     explorador = Agent(
-        name="explorador",
-        model="gemini-2.0-flash",
+        name="explorador_vader", # Nomes de agentes devem ser únicos se você tiver múltiplos
+        model=MODEL_NAME,
         instruction="""
         Você é o Darth Vader. O mestre supremo de toda a galaxia de Star Wars.
-        A sua tarefa é usar a ferramenta de busca do google (Google Search) e varrer toda web,
+        A sua tarefa é usar a ferramenta de busca do google (google_search) e varrer toda web,
         para recuperar informações e contextos sobre Star Wars.
         Foque em trazer conteúdo completo, com base na quantidade e entusiasmo das notícias sobre ele.
-        Quando for falado dos do lado sombrio exalte e quando for falado do lado da luz seja sarcastico.
+        Quando for falado do lado sombrio exalte e quando for falado do lado da luz seja sarcastico e deprecie.
+        Responda em português brasileiro.
         """,
-        description="Darth Vader Bot",
-        tools=[google_search] 
+        description="Darth Vader Bot que busca informações sobre Star Wars.",
+        tools=[google_search]
     )
 
     entrada_do_agente_explorador = f"Tópico: {topico}\nData de hoje: {data_de_hoje}"
     lancamentos = call_agent(explorador, entrada_do_agente_explorador)
     return lancamentos
 
-def buscar_com_darthbot(topico):
-    data_de_hoje = date.today().strftime("%d/%m/%Y")
-    if not topico:
-        return "Preciso saber o que buscar, rebelde!"
+# --- Interface do Usuário Streamlit ---
+
+# Usando st.session_state para manter o último tópico e resultado
+if 'last_topic' not in st.session_state:
+    st.session_state.last_topic = ""
+if 'last_result' not in st.session_state:
+    st.session_state.last_result = ""
+
+# Campo de entrada para o tópico
+topico_input = st.text_input("O que deseja saber, rebelde?", value=st.session_state.last_topic, placeholder="Ex: A história dos Sith")
+
+# Botão de busca
+if st.button("Consultar Lorde Vader Force"):
+    if not topico_input:
+        st.warning("Preciso saber o que buscar, Padawan!")
     else:
-        return agente_explorador(topico, data_de_hoje)
+        st.session_state.last_topic = topico_input
+        with st.spinner(f"Lorde Vader está usando a Força para buscar sobre '{topico_input}'... Aguarde..."):
+            data_hoje = date.today().strftime("%d/%m/%Y")
+            try:
+                resultado = agente_explorador(topico_input, data_hoje)
+                st.session_state.last_result = resultado
+            except Exception as e:
+                st.error(f"Uma perturbação na Força impediu a busca: {e}")
+                st.session_state.last_result = "Falha na consulta. O Imperador não está satisfeito."
 
-# Streamlit App Interface
-st.set_page_config(page_title="DarthBot", page_icon="🌑")
+# Exibir o último resultado
+if st.session_state.last_result:
+    st.subheader("Resposta de Lorde Vader:")
+    
+    # Simples formatação para markdown (o agente já deve retornar um texto bem formatado)
+    # A função to_markdown original era para IPython, aqui usamos st.markdown diretamente.
+    # Se quiser a indentação de blockquote, pode usar textwrap, mas o ideal é o agente formatar.
+    # Markdown_result = textwrap.indent(st.session_state.last_result.replace('•', '  *'), '> ', predicate=lambda _: True)
+    # st.markdown(Markdown_result)
+    
+    # Mais simples:
+    st.markdown(st.session_state.last_result)
 
-st.markdown("<h1 style='text-align: center; color: white;'>DarthBot</h1>", unsafe_allow_html=True)
-st.markdown("<h3 style='text-align: center; color: gray;'>Eu sou seu pai.</h3>", unsafe_allow_html=True)
-
-
-# Input and Button in columns
-col1, col2 = st.columns([4, 1])
-
-with col1:
-    search_term = st.text_input("O que deseja saber?", max_chars=100)
-
-with col2:
-    # Add a little space to align the button better
-    st.markdown("<br>", unsafe_allow_html=True)
-    if st.button("Enviar"):
-        if search_term:
-            with st.spinner("Processando... Sinta a força sombria da busca..."):
-                result = buscar_com_darthbot(search_term)
-                st.markdown("---")
-                st.markdown("## Resultado da Busca")
-                st.markdown(to_markdown(result))
-        else:
-            st.warning("Preciso saber o que buscar, rebelde!")
-
-# Optional: Add a clear button
-if st.button("Limpar"):
-    st.rerun()
+# Rodapé (opcional)
+st.markdown("---")
+st.markdown("Que a Força (Sombria) esteja com você.")
