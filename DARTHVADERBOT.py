@@ -1,3 +1,51 @@
+import uuid # Adicionar no topo do app.py
+
+def call_agent(agent: Agent, message_text: str) -> str:
+    current_session_id = f"streamlit_session_{uuid.uuid4()}" # ID de sessão único
+    session_service = InMemorySessionService()
+
+    # Para depuração, verifique se a sessão é realmente criada
+    st.write(f"Tentando criar sessão com ID: {current_session_id}") # DEBUG
+    try:
+        session = session_service.create_session(
+            app_name=agent.name,
+            user_id="streamlit_user",
+            session_id=current_session_id # Usar o ID único
+        )
+        st.write(f"Sessão criada: {session.session_id}. Sessões no serviço: {list(session_service._sessions.keys())}") # DEBUG
+    except Exception as e:
+        st.error(f"Erro ao CRIAR sessão {current_session_id}: {e}")
+        return "Falha ao iniciar a comunicação com a Força."
+
+    runner = Runner(agent=agent, app_name=agent.name, session_service=session_service)
+    content = genai_types.Content(role="user", parts=[genai_types.Part(text=message_text)])
+
+    final_response = ""
+    try:
+        st.write(f"Runner iniciando com session_id: {current_session_id}") # DEBUG
+        # O Runner usa o session_id passado aqui
+        for event in runner.run(
+            user_id="streamlit_user",
+            session_id=current_session_id, # Usar o ID único
+            new_message=content
+        ):
+            if event.is_final_response():
+                for part in event.content.parts:
+                    if part.text is not None:
+                        final_response += part.text
+                        final_response += "\n"
+        st.write(f"Runner concluiu para session_id: {current_session_id}") # DEBUG
+    except ValueError as ve:
+        st.error(f"ValueError no runner.run para session_id {current_session_id}: {ve}") # DEBUG específico
+        # Adicione mais detalhes do session_service se possível
+        st.error(f"Sessões existentes no service no momento do erro: {list(session_service._sessions.keys())}")
+        return "Lorde Vader está enfrentando interferências na Força (sessão não encontrada)... Tente novamente mais tarde."
+    except Exception as e:
+        st.error(f"Erro ao executar o agente para session_id {current_session_id}: {e}") # DEBUG
+        return "Lorde Vader está enfrentando interferências na Força... Tente novamente mais tarde."
+    return final_response
+##
+
 import streamlit as st
 import os
 from datetime import date
