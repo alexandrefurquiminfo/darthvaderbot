@@ -1,17 +1,3 @@
-# TESTE DE IMPORTAÇÃO (Pode remover ou comentar após confirmar que funciona)
-# try:
-#     from google.adk.agents import Agent
-#     print("SUCESSO: 'Agent' importado no teste inicial.")
-# except ImportError as e:
-#     print(f"FALHA NA IMPORTAÇÃO DE TESTE: {e}")
-#     raise
-# except NameError as ne:
-#     print(f"FALHA DE NAMEERROR NO TESTE: {ne}")
-#     raise
-# except Exception as ex:
-#     print(f"OUTRA EXCEÇÃO NO TESTE: {ex}")
-#     raise
-
 import streamlit as st
 import os
 from datetime import date
@@ -33,9 +19,6 @@ warnings.filterwarnings("ignore")
 st.set_page_config(page_title="DarthVaderBot", page_icon="🤖")
 st.title("DarthVaderBot 🌑")
 st.markdown("Eu sou seu pai... e estou aqui para buscar conhecimento na galáxia para você.")
-
-# Acessar a instância global
-SESSION_SERVICE_INSTANCE = st.session_state.adk_session_service
 
 # --- Carregamento da API Key ---
 # (Seu código de carregamento de API Key aqui)
