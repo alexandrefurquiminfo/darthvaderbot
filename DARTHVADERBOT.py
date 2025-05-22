@@ -44,6 +44,8 @@ with st.sidebar:
         "2. Crie ou selecione um projeto.\n"
         "3. Clique em \"Get API key\" e depois em \"Create API key in new project\" (ou existente).\n"
         "4. Copie sua chave."
+        "5. Cole no campo acima e aperte enter."
+        "6. Aproveite!"
     )
     st.markdown("---")
     if api_key_input:
