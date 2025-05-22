@@ -16,7 +16,7 @@ st.sidebar.info(
     "Ele usará seus vastos recursos (e a Força Sombria) para encontrar as informações que você procura."
 )
 st.sidebar.markdown("---")
-st.sidebar.markdown("Desenvolvido com a Força (e Streamlit).")
+st.sidebar.markdown("Desenvolvido com a Força (e Streamlit) por Alexandre Furquim - @bit01tec.")
 
 # --- Entrada da Chave API na Sidebar ---
 with st.sidebar:
