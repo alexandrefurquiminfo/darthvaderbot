@@ -43,9 +43,9 @@ with st.sidebar:
         "1. Acesse o [Google AI Studio](https://aistudio.google.com/app/apikey).\n"
         "2. Crie ou selecione um projeto.\n"
         "3. Clique em \"Get API key\" e depois em \"Create API key in new project\" (ou existente).\n"
-        "4. Copie sua chave."
-        "5. Cole no campo acima e aperte enter."
-        "6. Aproveite!"
+        "4. Copie sua chave.\n"
+        "5. Cole no campo acima e aperte enter.\n"
+        "6. Aproveite!\n"
     )
     st.markdown("---")
     if api_key_input:
