@@ -45,9 +45,13 @@ if not os.getenv("GOOGLE_API_KEY"): # Verificação final
 
 # --- Funções do Agente (adaptadas do seu notebook) ---
 # AGORA Agent, Runner, etc., são conhecidos aqui
-def call_agent(agent: Agent, message_text: str) -> str:
-    current_session_id = f"streamlit_session_{uuid.uuid4()}"
-    session_service = InMemorySessionService()
+#def call_agent(agent: Agent, message_text: str) -> str:
+#    current_session_id = f"streamlit_session_{uuid.uuid4()}"
+#    session_service = InMemorySessionService()
+
+    def call_agent_test(agent: Agent, message_text: str) -> str:
+    session_id = f"test_session_{uuid.uuid4()}"
+    session_service = InMemorySessionService() # Nova instância para cada chamada de teste aqui
 
     # Para depuração, verifique se a sessão é realmente criada
     # st.write(f"Tentando criar sessão com ID: {current_session_id}") # DEBUG
