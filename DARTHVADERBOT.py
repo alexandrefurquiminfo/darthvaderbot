@@ -175,7 +175,7 @@ if clear_button_form:
     st.session_state.last_result = ""
     st.session_state.search_triggered = False
     topico_input = "" # Limpa visualmente o campo de input (após rerun)
-    st.experimental_rerun() # Força o rerun para limpar o campo de texto imediatamente
+    st.rerun() # Força o rerun para limpar o campo de texto imediatamente
 
 if submit_button: # Se o botão de submit do form foi pressionado
     if not topico_input:
