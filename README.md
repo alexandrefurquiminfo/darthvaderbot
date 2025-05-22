@@ -42,8 +42,7 @@ streamlit run darthvaderbot.py
 Certifique-se de configurar sua chave da API da Google em um arquivo ou diretamente no código, conforme necessário.
 
 👨‍💻 Autor
-Alexandre Furquim – @bit01tec [bit01tec](https://zaap.bio/bit01tec)
-Você me encontra também no Instagram, Threads e TikTok.
+Alexandre Furquim – [@bit01tec](https://zaap.bio/bit01tec)
 
 ☕ Contribua
 Sinta-se à vontade para fazer um fork, criar issues ou enviar PRs com melhorias, novas personalidades, ou ajustes no visual.
