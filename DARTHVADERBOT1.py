@@ -144,7 +144,7 @@ for message in st.session_state.get("messages", []): # Usar .get para evitar err
 # --- Área de Input do Usuário e Botão de Envio ---
 user_query = st.text_area("Sua pergunta para Lord Vader:", key="user_query_input", height=100, label_visibility="collapsed", placeholder="O que você ousa perguntar a Lord Vader?")
 
-if st.button("Consultar Lord Vader", disabled=not api_ready): # Desabilita o botão se a API não estiver pronta
+if st.button("Consultar Lord Vader ⚡", disabled=not api_ready): # Desabilita o botão se a API não estiver pronta
     if not api_ready or not model or "chat_session" not in st.session_state:
         st.warning("A Força não está com você. Por favor, insira uma Chave API válida na barra lateral.")
     elif not user_query.strip():
