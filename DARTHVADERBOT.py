@@ -6,6 +6,7 @@ import warnings
 import uuid
 import google.generativeai as genai
 import streamlit as st
+import sys
 
 
 # Importações do Google ADK e GenAI DEVEM ESTAR AQUI, ANTES DAS FUNÇÕES
