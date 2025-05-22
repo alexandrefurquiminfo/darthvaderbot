@@ -125,6 +125,30 @@ if api_ready and model and "chat_session" not in st.session_state:
             gemini_format_history.append({"role": role, "parts": [msg["content"]]})
     
     st.session_state.chat_session = model.start_chat(history=gemini_format_history)
+
+    # --- Sugestões de Consulta ---
+st.markdown("---")
+st.markdown("#### Sugestões de Consulta:")
+
+sugestoes = [
+    "Qual o seu propósito, Lord Vader?",
+    "Conte-me sobre o poder do Lado Sombrio.",
+    "Onde está Padmé?",
+    "O Imperador está satisfeito com meu progresso?"
+]
+
+# Usar colunas para melhor layout dos botões de sugestão
+cols = st.columns(2) # Cria 2 colunas
+col_idx = 0
+for sugestao in sugestoes:
+    if cols[col_idx].button(sugestao, key=f"sug_{sugestao.replace(' ','_')}", disabled=not api_ready, use_container_width=True):
+        # Ao clicar na sugestão, o texto dela é usado para a consulta
+        # E a caixa de texto principal é atualizada (embora será limpa após o rerun)
+        st.session_state.user_query_input = sugestao
+        processar_e_enviar_consulta(sugestao)
+    col_idx = (col_idx + 1) % 2 # Alterna entre as colunas
+
+st.markdown("---")
     
     # Adiciona a primeira mensagem de saudação do Vader se não houver histórico prévio
     if not st.session_state.messages:
