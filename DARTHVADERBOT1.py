@@ -141,32 +141,7 @@ if api_ready and model and "chat_session" not in st.session_state:
 # --- Exibição das Mensagens do Chat ---
 for message in st.session_state.get("messages", []): # Usar .get para evitar erro se "messages" não existir
     with st.chat_message(message["role"]):
-        st.markdown(message["content"])
-        
-# --- Nova Seção: Sugestões com Selectbox ---
-st.write("### Ou escolha uma pergunta rápida:")
-sugestoes_selectbox = [
-    "Escolha uma sugestão...", # Opção padrão
-    "Qual o seu maior medo, Lorde Vader?",
-    "Fale sobre a Força.",
-    "Onde está Luke Skywalker?",
-    "Conte-me sobre o Império Galáctico.",
-    "Qual a sua opinião sobre Obi-Wan Kenobi?",
-    "Você é meu pai?"
-]
-
-selected_sugestao = st.selectbox(
-    "Selecione uma pergunta pré-definida:",
-    sugestoes_selectbox,
-    key="selectbox_sugestoes"
-)
-
-
-    # Para evitar que a sugestão seja processada novamente no próximo ciclo
-    # você pode querer limpar a seleção do selectbox ou adicionar uma lógica
-    # para processar apenas uma vez.
-    # Exemplo: st.session_state.selectbox_sugestoes = "Escolha uma sugestão...
-
+        st.markdown(message["content"])        
 
 
 # --- Área de Input do Usuário e Botão de Envio ---
