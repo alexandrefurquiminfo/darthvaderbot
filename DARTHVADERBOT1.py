@@ -11,6 +11,16 @@ st.markdown("Eu sou seu pai... e estou aqui para buscar conhecimento na galáxia
 st.title("🤖 Darth Vader Bot")
 st.caption("Consulte o Lorde das Trevas sobre os segredos da Força... Ou apenas tente não irritá-lo.")
 
+# --- Sidebar ---
+st.sidebar.image("https://www.pngarts.com/files/11/Vector-Darth-Vader-Helmet-Transparent-Image.png", caption="Lorde Vader Aguarda Suas Ordens")
+st.sidebar.markdown("## Sobre o DarthVaderBot")
+st.sidebar.info(
+    "Consulte o Lorde Sombrio dos Sith sobre qualquer tópico do universo Star Wars. "
+    "Ele usará seus vastos recursos (e a Força Sombria) para encontrar as informações que você procura."
+)
+st.sidebar.markdown("---")
+st.sidebar.markdown("Desenvolvido com a Força (e Streamlit).")
+
 # --- Entrada da Chave API na Sidebar ---
 with st.sidebar:
     st.header("🔑 Configuração da API")
