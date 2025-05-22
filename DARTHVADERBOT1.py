@@ -142,18 +142,52 @@ for message in st.session_state.get("messages", []): # Usar .get para evitar err
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
         
-# --- Nova Seção: Caixas de Sugestão ---
-st.write("### Sugestões para você:")
-col1, col2, col3 = st.columns(3) # Cria 3 colunas para os botões
-
-sugestoes = [
+# --- Nova Seção: Sugestões com Selectbox ---
+st.write("### Ou escolha uma pergunta rápida:")
+sugestoes_selectbox = [
+    "Escolha uma sugestão...", # Opção padrão
     "Qual o seu maior medo, Lorde Vader?",
     "Fale sobre a Força.",
     "Onde está Luke Skywalker?",
     "Conte-me sobre o Império Galáctico.",
     "Qual a sua opinião sobre Obi-Wan Kenobi?",
-    "Você é meu pai?" # Uma clássica!
+    "Você é meu pai?"
 ]
+
+selected_sugestao = st.selectbox(
+    "Selecione uma pergunta pré-definida:",
+    sugestoes_selectbox,
+    key="selectbox_sugestoes"
+)
+
+# Se o usuário selecionou uma sugestão que não é a opção padrão
+if selected_sugestao != "Escolha uma sugestão...":
+    # Envie a sugestão como se o usuário tivesse digitado
+    st.session_state.messages.append({"role": "user", "content": selected_sugestao})
+    with st.chat_message("user"):
+        st.markdown(selected_sugestao)
+    with st.chat_message("assistant"):
+        with st.spinner("Darth Vader está pensando..."):
+            time.sleep(1)
+            st.markdown(f"**Darth Vader diz:** 'Sua sugestão selecionada foi: {selected_sugestao}'. (Resposta real da IA viria aqui)")
+    # Para evitar que a sugestão seja processada novamente no próximo ciclo
+    # você pode querer limpar a seleção do selectbox ou adicionar uma lógica
+    # para processar apenas uma vez.
+    # Exemplo: st.session_state.selectbox_sugestoes = "Escolha uma sugestão..."
+
+# Entrada de texto do usuário (continua a funcionar normalmente)
+if prompt := st.chat_input("Pergunte algo a Darth Vader..."):
+    st.session_state.messages.append({"role": "user", "content": prompt})
+    with st.chat_message("user"):
+        st.markdown(prompt)
+
+    with st.chat_message("assistant"):
+        with st.spinner("Darth Vader está pensando..."):
+            # Sua função de IA aqui
+            time.sleep(2)
+            st.markdown(f"**Darth Vader diz:** 'Sua pergunta foi: {prompt}'. (Resposta real da IA viria aqui)")
+
+
 
 # --- Área de Input do Usuário e Botão de Envio ---
 user_query = st.text_area("Sua pergunta para Lord Vader:", key="user_query_input", height=100, label_visibility="collapsed", placeholder="O que você ousa perguntar a Lord Vader?")
