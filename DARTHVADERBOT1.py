@@ -174,19 +174,7 @@ if selected_sugestao != "Escolha uma sugestão...":
     # Para evitar que a sugestão seja processada novamente no próximo ciclo
     # você pode querer limpar a seleção do selectbox ou adicionar uma lógica
     # para processar apenas uma vez.
-    # Exemplo: st.session_state.selectbox_sugestoes = "Escolha uma sugestão..."
-
-# Entrada de texto do usuário (continua a funcionar normalmente)
-if prompt := st.chat_input("Pergunte algo a Darth Vader..."):
-    st.session_state.messages.append({"role": "user", "content": prompt})
-    with st.chat_message("user"):
-        st.markdown(prompt)
-
-    with st.chat_message("assistant"):
-        with st.spinner("Darth Vader está pensando..."):
-            # Sua função de IA aqui
-            time.sleep(2)
-            st.markdown(f"**Darth Vader diz:** 'Sua pergunta foi: {prompt}'. (Resposta real da IA viria aqui)")
+    # Exemplo: st.session_state.selectbox_sugestoes = "Escolha uma sugestão...
 
 
 
