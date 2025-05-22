@@ -1,6 +1,7 @@
 import streamlit as st
 import google.generativeai as genai
 import os # Para o exemplo de secrets, opcional
+import time
 
 # --- Configuração da Página Streamlit ---
 st.set_page_config(page_title="DarthVaderBot", page_icon="🤖")
