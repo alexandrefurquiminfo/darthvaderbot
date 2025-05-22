@@ -3,11 +3,10 @@ import google.generativeai as genai
 import os # Para o exemplo de secrets, opcional
 
 # --- Configuração da Página Streamlit ---
-st.set_page_config(
-    page_title="Darth Vader Bot",
-    page_icon="🤖",
-    layout="centered" # Ou "wide" se preferir
-)
+st.set_page_config(page_title="DarthVaderBot", page_icon="🤖")
+st.title("DarthVaderBot 🌑")
+st.markdown("Eu sou seu pai... e estou aqui para buscar conhecimento na galáxia para você.")
+
 
 st.title("🤖 Darth Vader Bot")
 st.caption("Consulte o Lorde das Trevas sobre os segredos da Força... Ou apenas tente não irritá-lo.")
