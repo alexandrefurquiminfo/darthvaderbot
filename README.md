@@ -10,6 +10,7 @@ Um bot interativo baseado em IA com a personalidade sombria de Darth Vader. Feit
 
 - [Python](https://www.python.org/)
 - [Streamlit](https://streamlit.io/)
+- [Google Gemini](https://gemini.google.com/)
 - [HTML/CSS personalizado] (para estilização)
 
 ---
@@ -27,8 +28,8 @@ Um bot interativo baseado em IA com a personalidade sombria de Darth Vader. Feit
 
 1. Clone o repositório:
    ```bash
-   git clone https://github.com/seu-usuario/darth-vader-bot.git
-   cd darth-vader-bot
+   git clone https://github.com/alexandrefurquiminfo/darthvaderbot.git
+   cd darthvaderbot
 
 2 Instale as dependências:
 
@@ -36,12 +37,12 @@ pip install -r requirements.txt
 
 Execute a aplicação:
 
-streamlit run app.py
+streamlit run darthvaderbot.py
 
 Certifique-se de configurar sua chave da API da Google em um arquivo ou diretamente no código, conforme necessário.
 
 👨‍💻 Autor
-Alexandre Furquim – bit01tec
+Alexandre Furquim – @bit01tec
 Você me encontra também no Instagram, Threads e TikTok.
 
 ☕ Contribua
