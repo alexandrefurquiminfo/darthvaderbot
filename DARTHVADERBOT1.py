@@ -188,3 +188,8 @@ elif not api_ready and st.session_state.get("messages") and len(st.session_state
 # Se você quiser limpar o input de texto após enviar, `st.rerun()` geralmente faz isso
 # ou você pode tentar redefinir o valor da chave do `st.text_area` antes do rerun,
 # mas o `st.rerun()` é mais direto para atualizar todo o estado da UI.
+
+# --- Botão Limpar Chat ---
+if st.button("Limpar Chat"):
+    st.session_state.messages = [] # Limpa todas as mensagens do histórico
+    st.experimental_rerun() # Recarrega a página para refletir a limpeza
