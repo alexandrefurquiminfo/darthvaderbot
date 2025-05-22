@@ -136,10 +136,24 @@ if api_ready and model and "chat_session" not in st.session_state:
         # ou se o `system_instruction` já cobre a saudação.
 
 
+
 # --- Exibição das Mensagens do Chat ---
 for message in st.session_state.get("messages", []): # Usar .get para evitar erro se "messages" não existir
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
+        
+# --- Nova Seção: Caixas de Sugestão ---
+st.write("### Sugestões para você:")
+col1, col2, col3 = st.columns(3) # Cria 3 colunas para os botões
+
+sugestoes = [
+    "Qual o seu maior medo, Lorde Vader?",
+    "Fale sobre a Força.",
+    "Onde está Luke Skywalker?",
+    "Conte-me sobre o Império Galáctico.",
+    "Qual a sua opinião sobre Obi-Wan Kenobi?",
+    "Você é meu pai?" # Uma clássica!
+]
 
 # --- Área de Input do Usuário e Botão de Envio ---
 user_query = st.text_area("Sua pergunta para Lord Vader:", key="user_query_input", height=100, label_visibility="collapsed", placeholder="O que você ousa perguntar a Lord Vader?")
