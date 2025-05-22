@@ -125,7 +125,7 @@ def agente_explorador(topico: str, data_de_hoje: str) -> str:
     lancamentos = call_agent(explorador, entrada_do_agente_explorador)
     return lancamentos
 
-st.sidebar.image("https://upload.wikimedia.org/wikipedia/commons/thumb/2/24/Darth_Vader_original_helmet.jpg/800px-Darth_Vader_original_helmet.jpg", caption="Lorde Vader Aguarda Suas Ordens")
+st.sidebar.image("https://www.pngarts.com/files/11/Vector-Darth-Vader-Helmet-Transparent-Image.png", caption="Lorde Vader Aguarda Suas Ordens")
 st.sidebar.markdown("## Sobre o DarthVaderBot")
 st.sidebar.info(
     "Consulte o Lorde Sombrio dos Sith sobre qualquer tópico do universo Star Wars. "
