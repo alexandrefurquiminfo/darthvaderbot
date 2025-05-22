@@ -4,8 +4,8 @@ import os # Para o exemplo de secrets, opcional
 import time
 
 # --- Configuração da Página Streamlit ---
-st.set_page_config(page_title="DarthVaderBot", page_icon="https://e7.pngegg.com/pngimages/418/493/png-clipart-darth-vader-illustration-anakin-skywalker-walt-disney-imagineering-computer-icons-sith-star-wars-darth-vader-fictional-character-jedi.png")
-st.title("DarthVaderBot 🌑💀")
+st.set_page_config(page_title="Darth Vader Bot", page_icon="https://e7.pngegg.com/pngimages/418/493/png-clipart-darth-vader-illustration-anakin-skywalker-walt-disney-imagineering-computer-icons-sith-star-wars-darth-vader-fictional-character-jedi.png")
+st.title("Darth Vader Bot 🌑")
 st.markdown("Eu sou seu pai... e estou aqui para buscar conhecimento na galáxia para você.")
 
 # --- Sidebar ---
