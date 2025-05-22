@@ -31,7 +31,7 @@ with st.sidebar:
 
 
     api_key_input = st.text_input(
-        "Insira sua Chave API do Google Gemini e aperte enter",
+        "Insira sua Chave API do Google Gemini:",
         type="password",
         help="Sua chave API não será armazenada permanentemente. É usada apenas para esta sessão.",
         value=GOOGLE_API_KEY_SECRET if GOOGLE_API_KEY_SECRET else "" # Preenche se existir no secret
