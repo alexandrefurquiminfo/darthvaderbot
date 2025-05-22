@@ -104,7 +104,7 @@ def call_agent(agent: Agent, message_text: str) -> str:
 
 
 def agente_explorador(topico: str, data_de_hoje: str) -> str:
-    MODEL_NAME = "gemini-1.5-flash"
+    MODEL_NAME = "gemini-2.0-flash"
 
     explorador = Agent(
         name="explorador_vader",
