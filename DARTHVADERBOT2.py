@@ -12,7 +12,7 @@ import sys
 from google.adk.agents import Agent
 from google.adk.runners import Runner
 from google.adk.sessions import InMemorySessionService
-from google.adk.tools import Google Search
+from google.adk.tools import google_search
 from google.genai import types as genai_types # Renomeado para evitar conflito com st.types
 from datetime import date
 
@@ -118,7 +118,7 @@ def agente_explorador(topico: str, data_de_hoje: str) -> str:
         Responda em português brasileiro.
         """,
         description="Darth Vader Bot que busca informações sobre Star Wars.",
-        tools=[Google Search]
+        tools=[google_search]
     )
 
     entrada_do_agente_explorador = f"Tópico: {topico}\nData de hoje: {data_de_hoje}"
