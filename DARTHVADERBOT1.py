@@ -161,16 +161,7 @@ selected_sugestao = st.selectbox(
     key="selectbox_sugestoes"
 )
 
-# Se o usuário selecionou uma sugestão que não é a opção padrão
-if selected_sugestao != "Escolha uma sugestão...":
-    # Envie a sugestão como se o usuário tivesse digitado
-    st.session_state.messages.append({"role": "user", "content": selected_sugestao})
-    with st.chat_message("user"):
-        st.markdown(selected_sugestao)
-    with st.chat_message("assistant"):
-        with st.spinner("Darth Vader está pensando..."):
-            time.sleep(1)
-            st.markdown(f"**Darth Vader diz:** 'Sua sugestão selecionada foi: {selected_sugestao}'. (Resposta real da IA viria aqui)")
+
     # Para evitar que a sugestão seja processada novamente no próximo ciclo
     # você pode querer limpar a seleção do selectbox ou adicionar uma lógica
     # para processar apenas uma vez.
