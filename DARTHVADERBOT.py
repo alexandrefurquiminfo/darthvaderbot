@@ -124,102 +124,94 @@ st.sidebar.markdown("Desenvolvido com a Força (e Streamlit).")
 
 
 # Usando st.session_state para manter o estado
-if 'last_topic' not in st.session_state:
-    st.session_state.last_topic = ""
+if 'current_topic_input' not in st.session_state: # Usaremos este para o valor do text_input
+    st.session_state.current_topic_input = ""
+if 'last_searched_topic' not in st.session_state: # O tópico que foi efetivamente buscado
+    st.session_state.last_searched_topic = ""
 if 'last_result' not in st.session_state:
     st.session_state.last_result = ""
-if 'search_triggered' not in st.session_state:
-    st.session_state.search_triggered = False # Para controlar a exibição da mensagem "sem resultados"
+if 'search_triggered_count' not in st.session_state: # Para diferenciar cliques de submit
+    st.session_state.search_triggered_count = 0
 
-# Título e Introdução já definidos no seu código principal, ex:
-# st.set_page_config(page_title="DarthVaderBot", page_icon="🌑")
+
+# Título e Introdução
+# st.set_page_config(page_title="DarthVaderBot", page_icon="🌑") # Deve estar no topo do script
 # st.title("DarthVaderBot 🌑")
 # st.markdown("Eu sou seu pai... e estou aqui para buscar conhecimento na galáxia para você.")
 # st.markdown("---")
 
 # Exemplos de perguntas
-st.subheader("Exemplos de Consultas ao Lorde Vader:")
+st.subheader("Sugestões de Consultas:")
 cols_exemplos = st.columns(3)
 exemplos = ["A história da Ordem Sith", "Detalhes da Millennium Falcon", "Quem é Ahsoka Tano?"]
-if 'example_topic' not in st.session_state:
-    st.session_state.example_topic = ""
 
 for i, col in enumerate(cols_exemplos):
-    if col.button(exemplos[i], key=f"ex{i}"):
-        st.session_state.example_topic = exemplos[i] # Guarda o exemplo clicado
-        # Não precisa mais de st.experimental_rerun() aqui, o valor será usado no text_input
+    if col.button(exemplos[i], key=f"ex{i}", use_container_width=True):
+        st.session_state.current_topic_input = exemplos[i] # Apenas preenche o campo
+        # Não precisa de rerun aqui, o text_input pegará o valor na próxima renderização
 
 # Usando st.form para agrupar input e botão
 with st.form(key="search_form"):
-    # Campo de entrada para o tópico
-    # Se um exemplo foi clicado, usa ele, senão o último tópico ou vazio
-    valor_inicial_topico = st.session_state.example_topic if st.session_state.example_topic else st.session_state.last_topic
-    topico_input = st.text_input(
+    topico_input_val = st.text_input( # O widget text_input em si
         "O que deseja saber, rebelde?",
-        value=valor_inicial_topico, # Usa o valor do exemplo se clicado
+        value=st.session_state.current_topic_input, # Controlado pelo session_state
         placeholder="Pergunte sobre personagens, naves, planetas, a Força...",
-        help="Digite seu questionamento sobre o universo Star Wars."
+        help="Digite seu questionamento sobre o universo Star Wars.",
+        key="topic_text_field" # Dando uma chave explícita
     )
-    st.session_state.example_topic = "" # Limpa o exemplo após usar
 
-    # Botão de busca dentro do form
-    col1_submit, col2_clear = st.columns([3,1])
-    with col1_submit:
-        submit_button = st.form_submit_button(label="Consultar Lorde Vader ⚡", use_container_width=True)
-    with col2_clear:
-        clear_button_form = st.form_submit_button(label="Limpar Busca", use_container_width=True, type="secondary")
+    submit_button = st.form_submit_button(label="Consultar Lorde Vader ⚡", use_container_width=True)
+    # O botão de limpar foi removido do form para simplificar, pode ser adicionado fora se necessário
 
+if submit_button:
+    # Atualiza current_topic_input com o valor do campo no momento da submissão
+    # Isso é importante porque o usuário pode ter editado o texto após clicar no exemplo
+    st.session_state.current_topic_input = topico_input_val # Captura o valor do campo de texto no submit
 
-if clear_button_form:
-    st.session_state.last_topic = ""
-    st.session_state.last_result = ""
-    st.session_state.search_triggered = False
-    topico_input = "" # Limpa visualmente o campo de input (após rerun)
-    st.rerun() # Força o rerun para limpar o campo de texto imediatamente
-
-if submit_button: # Se o botão de submit do form foi pressionado
-    if not topico_input:
+    if not st.session_state.current_topic_input: # Verifica o valor do session_state
         st.warning("A Força detecta uma falta de clareza. Preciso saber o que buscar, Padawan!")
     else:
-        st.session_state.search_triggered = True
-        st.session_state.last_topic = topico_input # Salva o tópico atual
-        st.session_state.last_result = "" # Limpa o resultado anterior antes da nova busca
+        st.session_state.search_triggered_count += 1
+        st.session_state.last_searched_topic = st.session_state.current_topic_input # Salva o tópico que será buscado
+        st.session_state.last_result = "" # Limpa o resultado anterior
 
-        # Mostrar spinner e processar a busca
-        with st.spinner(f"Lorde Vader está canalizando a Força Sombria para buscar sobre '{topico_input}'... Isso pode levar um momento..."):
-            # Simulando a chamada ao agente (substitua pelo seu código real)
-            # data_hoje = date.today().strftime("%d/%m/%Y")
-            # try:
-            #     resultado = agente_explorador(topico_input, data_hoje)
-            #     st.session_state.last_result = resultado
-            # except Exception as e:
-            #     st.error(f"Uma perturbação na Força impediu a busca: {e}")
-            #     st.session_state.last_result = "Falha na consulta. O Imperador não está satisfeito."
+        with st.spinner(f"Lorde Vader está canalizando a Força Sombria para buscar sobre '{st.session_state.last_searched_topic}'... Isso pode levar um momento..."):
+            data_hoje = date.today().strftime("%d/%m/%Y")
+            try:
+                # -------- SUBSTITUA PELO SEU CÓDIGO REAL ABAIXO --------
+                # resultado = agente_explorador(st.session_state.last_searched_topic, data_hoje)
+                # st.session_state.last_result = resultado
+                # -------- BLOCO DE SIMULAÇÃO PARA TESTE DA UI --------
+                import time
+                time.sleep(2)
+                if "erro" in st.session_state.last_searched_topic.lower():
+                    st.session_state.last_result = "O lado sombrio detectou uma falha em seus sistemas. Tente novamente."
+                    st.error("Uma perturbação na Força impediu a busca: Erro simulado.")
+                else:
+                    st.session_state.last_result = f"**Sobre '{st.session_state.last_searched_topic}':**\n\nLorde Vader encontrou o seguinte:\n\n* Detalhe 1 sobre {st.session_state.last_searched_topic}.\n* Detalhe 2 sobre {st.session_state.last_searched_topic}."
+                # -------- FIM DO BLOCO DE SIMULAÇÃO --------
+            except Exception as e:
+                st.error(f"Uma perturbação na Força impediu a busca: {e}")
+                st.session_state.last_result = "Falha na consulta. O Imperador não está satisfeito."
+        st.rerun() # Reexecuta para atualizar a exibição do resultado e limpar o campo de exemplo
 
-            # -------- INÍCIO DO BLOCO DE SIMULAÇÃO (REMOVA E USE SEU CÓDIGO REAL) --------
-            import time
-            time.sleep(3) # Simula o tempo de processamento
-            if "erro" in topico_input.lower():
-                 st.session_state.last_result = "O lado sombrio detectou uma falha em seus sistemas. Tente novamente."
-                 st.error("Uma perturbação na Força impediu a busca: Erro simulado.")
-            else:
-                 st.session_state.last_result = f"**Sobre '{topico_input}':**\n\nLorde Vader encontrou o seguinte, seu verme insignificante:\n\n*   Detalhe importante 1 sobre {topico_input}.\n*   Detalhe importante 2, mais impressionante, sobre {topico_input}.\n*   Os Jedi nunca entenderiam a profundidade de {topico_input}."
-            # -------- FIM DO BLOCO DE SIMULAÇÃO --------
+# Botão para limpar tudo (fora do form)
+if st.button("Limpar Tudo 🗑️", type="secondary"):
+    st.session_state.current_topic_input = ""
+    st.session_state.last_searched_topic = ""
+    st.session_state.last_result = ""
+    st.session_state.search_triggered_count = 0
+    st.rerun()
 
 
 # Exibir o último resultado
-if st.session_state.search_triggered: # Só mostra a seção de resultados se uma busca foi feita
+if st.session_state.search_triggered_count > 0: # Mostra se alguma busca já foi feita
     if st.session_state.last_result:
         st.markdown("---")
-        st.subheader("📜 A Resposta de Lorde Vader:")
-        with st.container(): # Usar um container para poder aplicar estilo se desejado
-            # Você pode usar st.info(), st.success() ou apenas st.markdown()
-            # st.info(st.session_state.last_result)
+        st.subheader(f"📜 A Resposta de Lorde Vader sobre '{st.session_state.last_searched_topic}':")
+        with st.container():
             st.markdown(st.session_state.last_result)
-    elif not st.session_state.last_result and topico_input: # Se houve busca mas sem resultado (ex: erro)
-        # A mensagem de erro já foi exibida no bloco try/except
-        pass
-    # Não mostrar "nenhum resultado ainda" se a página acabou de carregar
+    # Se last_result estiver vazio após uma busca, o erro já foi mostrado
 
 st.markdown("---")
 st.caption("Que a Força (Sombria) esteja com você. Sempre.")
