@@ -104,7 +104,7 @@ def call_agent(agent: Agent, message_text: str) -> str:
 
 
 def agente_explorador(topico: str, data_de_hoje: str) -> str:
-    MODEL_NAME = "gemini-2.5-flash-preview-05-20"
+    MODEL_NAME = "gemini-pro"
 
     explorador = Agent(
         name="explorador_vader",
@@ -118,7 +118,7 @@ def agente_explorador(topico: str, data_de_hoje: str) -> str:
         Responda em português brasileiro.
         """,
         description="Darth Vader Bot que busca informações sobre Star Wars.",
-        tools=[none]
+        tools=[google_search]
     )
 
     entrada_do_agente_explorador = f"Tópico: {topico}\nData de hoje: {data_de_hoje}"
