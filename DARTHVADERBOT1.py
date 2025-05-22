@@ -7,10 +7,6 @@ st.set_page_config(page_title="DarthVaderBot", page_icon="🤖")
 st.title("DarthVaderBot 🌑")
 st.markdown("Eu sou seu pai... e estou aqui para buscar conhecimento na galáxia para você.")
 
-
-st.title("🤖 Darth Vader Bot")
-st.caption("Consulte o Lorde das Trevas sobre os segredos da Força... Ou apenas tente não irritá-lo.")
-
 # --- Sidebar ---
 st.sidebar.image("https://www.pngarts.com/files/11/Vector-Darth-Vader-Helmet-Transparent-Image.png", caption="Lorde Vader Aguarda Suas Ordens")
 st.sidebar.markdown("## Sobre o DarthVaderBot")
