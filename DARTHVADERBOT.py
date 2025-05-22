@@ -179,16 +179,16 @@ if submit_button:
             data_hoje = date.today().strftime("%d/%m/%Y")
             try:
                 # -------- SUBSTITUA PELO SEU CÓDIGO REAL ABAIXO --------
-                # resultado = agente_explorador(st.session_state.last_searched_topic, data_hoje)
-                # st.session_state.last_result = resultado
+                 resultado = agente_explorador(st.session_state.last_searched_topic, data_hoje)
+                 st.session_state.last_result = resultado
                 # -------- BLOCO DE SIMULAÇÃO PARA TESTE DA UI --------
-                import time
-                time.sleep(2)
-                if "erro" in st.session_state.last_searched_topic.lower():
-                    st.session_state.last_result = "O lado sombrio detectou uma falha em seus sistemas. Tente novamente."
-                    st.error("Uma perturbação na Força impediu a busca: Erro simulado.")
-                else:
-                    st.session_state.last_result = f"**Sobre '{st.session_state.last_searched_topic}':**\n\nLorde Vader encontrou o seguinte:\n\n* Detalhe 1 sobre {st.session_state.last_searched_topic}.\n* Detalhe 2 sobre {st.session_state.last_searched_topic}."
+               # import time
+               # time.sleep(2)
+               # if "erro" in st.session_state.last_searched_topic.lower():
+               #     st.session_state.last_result = "O lado sombrio detectou uma falha em seus sistemas. Tente novamente."
+                #    st.error("Uma perturbação na Força impediu a busca: Erro simulado.")
+               # else:
+                #    st.session_state.last_result = f"**Sobre '{st.session_state.last_searched_topic}':**\n\nLorde Vader encontrou o seguinte:\n\n* Detalhe 1 sobre {st.session_state.last_searched_topic}.\n* Detalhe 2 sobre {st.session_state.last_searched_topic}."
                 # -------- FIM DO BLOCO DE SIMULAÇÃO --------
             except Exception as e:
                 st.error(f"Uma perturbação na Força impediu a busca: {e}")
