@@ -118,7 +118,7 @@ def agente_explorador(topico: str, data_de_hoje: str) -> str:
         Responda em português brasileiro.
         """,
         description="Darth Vader Bot que busca informações sobre Star Wars.",
-        tools=[google_search]
+        tools=[none]
     )
 
     entrada_do_agente_explorador = f"Tópico: {topico}\nData de hoje: {data_de_hoje}"
