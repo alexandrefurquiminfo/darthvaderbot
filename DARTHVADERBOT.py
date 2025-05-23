@@ -27,7 +27,7 @@ with st.sidebar:
     try:
         GOOGLE_API_KEY_SECRET = st.secrets.get("GOOGLE_API_KEY")
     except Exception: # st.secrets não disponível localmente sem config ou em versões antigas
-        GOOGLE_API_KEY_SECRET = None
+        GOOGLE_API_KEY_SECRET = st.secrets
 
 
     api_key_input = st.text_input(
