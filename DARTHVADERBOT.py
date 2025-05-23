@@ -20,7 +20,7 @@ st.sidebar.markdown("Desenvolvido com a Força (e Streamlit) por Alexandre Furqu
 
 # --- Entrada da Chave API na Sidebar ---
 with st.sidebar:
-   # st.header("🔑 Configuração da API")
+    st.header("🔑 Configuração da API")
     # Tenta carregar a chave dos secrets do Streamlit (ideal para deploy)
      GOOGLE_API_KEY_SECRET = os.environ.get("GOOGLE_API_KEY") # Para deploy no Streamlit Cloud usando secrets
      #Se não encontrar no environment, tenta st.secrets (para secrets.toml local ou no Streamlit Cloud)
