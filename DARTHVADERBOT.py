@@ -176,12 +176,8 @@ if st.button("Consultar Lord Vader ⚡", disabled=not api_ready): # Desabilita o
                 # Limpa a caixa de texto da pergunta (opcional, mas bom para UX)
                 # Isso requer um rerun, que faremos abaixo.
                 # st.session_state.user_query_input = "" # Não funciona bem sem rerun para text_area
-                #st.rerun() # Re-executa o script para atualizar a interface com a nova mensagem
-
-            # --- Botão para Limpar Histórico ---
-if st.button("Limpar Histórico", key="clear_button"):
-    st.session_state.chat_history = []
-    st.rerun() # Recarrega o app para limpar o histórico visualmente
+                st.rerun() # Re-executa o script para atualizar a interface com a nova mensagem
+           
             
             except Exception as e:
                 st.error(f"Um distúrbio na Força impediu a comunicação: {e}")
