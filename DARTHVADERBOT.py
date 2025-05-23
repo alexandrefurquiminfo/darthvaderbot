@@ -181,7 +181,7 @@ if st.button("Consultar Lord Vader ⚡", disabled=not api_ready): # Desabilita o
             # --- Botão para Limpar Histórico ---
 if st.button("Limpar Histórico", key="clear_button"):
     st.session_state.chat_history = []
-    st.experimental_rerun() # Recarrega o app para limpar o histórico visualmente
+    st.rerun() # Recarrega o app para limpar o histórico visualmente
             
             except Exception as e:
                 st.error(f"Um distúrbio na Força impediu a comunicação: {e}")
