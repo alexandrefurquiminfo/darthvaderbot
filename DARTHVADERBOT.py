@@ -18,14 +18,40 @@ st.sidebar.info(
 st.sidebar.markdown("---")
 st.sidebar.markdown("Desenvolvido com a Força (e Streamlit) por Alexandre Furquim - @bit01tec.")
 
-# --- Inicialização da API Gemini (AQUI ESTÁ A MUDANÇA PRINCIPAL) ---
-# Tenta carregar a API Key dos secrets do Streamlit
-try:
-    google_api_key = st.secrets["google_api_key"]
-    genai.configure(api_key=google_api_key)
-except KeyError:
-    st.error("Erro: Sua Google API Key não foi encontrada nos segredos do Streamlit. Por favor, adicione-a em `.streamlit/secrets.toml` ou nas configurações de segredos do Streamlit Cloud.")
-    st.stop() # Interrompe a execução do aplicativo se a chave não estiver configurada
+# --- Entrada da Chave API na Sidebar ---
+with st.sidebar:
+   # st.header("🔑 Configuração da API")
+    # Tenta carregar a chave dos secrets do Streamlit (ideal para deploy)
+     GOOGLE_API_KEY_SECRET = os.environ.get("GOOGLE_API_KEY") # Para deploy no Streamlit Cloud usando secrets
+     #Se não encontrar no environment, tenta st.secrets (para secrets.toml local ou no Streamlit Cloud)
+    try:
+        GOOGLE_API_KEY_SECRET = st.secrets.get("GOOGLE_API_KEY")
+    except Exception: # st.secrets não disponível localmente sem config ou em versões antigas
+        GOOGLE_API_KEY_SECRET = None
+
+
+    api_key_input = st.text_input(
+        "Insira sua Chave API do Google Gemini:",
+        type="password",
+        help="Sua chave API não será armazenada permanentemente. É usada apenas para esta sessão.",
+        value=GOOGLE_API_KEY_SECRET if GOOGLE_API_KEY_SECRET else "" # Preenche se existir no secret
+    )
+
+    st.markdown("---")
+    st.markdown(
+        "**Onde obter uma chave API do Google Gemini:**\n"
+        "1. Acesse o [Google AI Studio](https://aistudio.google.com/app/apikey).\n"
+        "2. Crie ou selecione um projeto.\n"
+        "3. Clique em \"Get API key\" e depois em \"Create API key in new project\" (ou existente).\n"
+        "4. Copie sua chave.\n"
+        "5. Cole no campo acima e aperte enter.\n"
+        "6. Aproveite!\n"
+    )
+    st.markdown("---")
+    if api_key_input:
+        st.success("Chave API pronta para ser usada!")
+    else:
+        st.info("Após inserir a chave API, você poderá consultar Lord Vader.") 
 
 # --- Configuração do Modelo Gemini e Chat (Condicional à API Key) ---
 model = None
