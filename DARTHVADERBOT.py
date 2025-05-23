@@ -192,4 +192,8 @@ elif not api_ready and st.session_state.get("messages") and len(st.session_state
 # ou você pode tentar redefinir o valor da chave do `st.text_area` antes do rerun,
 # mas o `st.rerun()` é mais direto para atualizar todo o estado da UI.
 
+# --- Botão para Limpar Histórico ---
+if st.button("Limpar Histórico", key="clear_button"):
+    st.session_state.chat_history = []
+    st.experimental_rerun() # Recarrega o app para limpar o histórico visualmente
 
