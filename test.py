@@ -1,138 +1,164 @@
 import streamlit as st
 import google.generativeai as genai
+import os # Para o exemplo de secrets, opcional
+import time
 
-# --- Configuração da Página ---
-st.set_page_config(
-    page_title="DarthVaderBot",
-    page_icon="🤖",
-    layout="centered",
-    initial_sidebar_state="expanded"
+# --- Configuração da Página Streamlit ---
+st.set_page_config(page_title="Darth Vader Bot", page_icon="https://e7.pngegg.com/pngimages/418/493/png-clipart-darth-vader-illustration-anakin-skywalker-walt-disney-imagineering-computer-icons-sith-star-wars-darth-vader-fictional-character-jedi.png")
+st.title("Darth Vader Bot 🌑")
+st.markdown("Eu sou seu pai... e estou aqui para buscar conhecimento na galáxia para você.")
+
+# --- Sidebar ---
+st.sidebar.image("https://www.pngarts.com/files/11/Vector-Darth-Vader-Helmet-Transparent-Image.png", caption="Lorde Vader Aguarda Suas Ordens")
+st.sidebar.markdown("## Sobre o DarthVaderBot")
+st.sidebar.info(
+    "Consulte o Lorde Sombrio dos Sith sobre qualquer tópico do universo Star Wars. "
+    "Ele usará seus vastos recursos (e a Força Sombria) para encontrar as informações que você procura."
+)
+st.sidebar.markdown("---")
+st.sidebar.markdown("Desenvolvido com a Força (e Streamlit) por Alexandre Furquim - @bit01tec.")
+
+# --- Entrada da Chave API na Sidebar ---
+st.secrets:["GOOGLE_API_KEY"]
+
+# --- Configuração do Modelo Gemini e Chat (Condicional à API Key) ---
+model = None
+chat = None
+api_ready = False
+
+# Configurações do modelo (do seu código original)
+# É uma boa prática definir a persona (system prompt) diretamente no modelo se a API suportar,
+# ou como a primeira mensagem na inicialização do chat.
+# Para Gemini, `system_instruction` é o parâmetro ideal para o GenerativeModel.
+SYSTEM_INSTRUCTION_VADER = (
+        """
+        Você é o Darth Vader. O mestre supremo de toda a galaxia de Star Wars.
+        A sua tarefa é usar a ferramenta de busca do google (Google Search) e varrer toda web,
+        para recuperar informações e contextos sobre Star Wars.
+        Foque em trazer conteúdo completo, com base na quantidade e entusiasmo das notícias sobre ele.
+        Quando for falado do lado sombrio exalte e quando for falado do lado da luz seja sarcastico e deprecie.
+        Responda em português brasileiro."
+        """
+  
 )
 
-# --- Estilos CSS (mantidos do seu código original) ---
-st.markdown("""
-    <style>
-    .reportview-container {
-        background: #000000;
-    }
-    .main .block-container {
-        padding-top: 2rem;
-        padding-bottom: 2rem;
-        padding-left: 1rem;
-        padding-right: 1rem;
-    }
-    h1 {
-        color: #ff0000; /* Vermelho Sith */
-        text-align: center;
-        text-shadow: 2px 2px 4px #000000;
-    }
-    .stTextInput label {
-        color: #e0e0e0;
-    }
-    .stButton>button {
-        background-color: #4a0000; /* Vermelho escuro */
-        color: white;
-        border-radius: 5px;
-        border: none;
-        padding: 0.5rem 1rem;
-        font-size: 1rem;
-        cursor: pointer;
-        transition: background-color 0.3s ease;
-    }
-    .stButton>button:hover {
-        background-color: #8b0000; /* Vermelho mais vibrante no hover */
-    }
-    .stTextArea label {
-        color: #e0e0e0;
-    }
-    .css-1d391kg { /* Estilo da caixa de texto input */
-        background-color: #333333;
-        color: #ffffff;
-        border: 1px solid #555555;
-        border-radius: 5px;
-    }
-    .css-q8sde7 { /* Estilo da caixa de texto input quando focada */
-        border-color: #ff0000;
-        box-shadow: 0 0 0 0.1rem #ff0000;
-    }
-    .stMarkdown p {
-        color: #e0e0e0;
-    }
-    /* Estilos para as mensagens do chat */
-    .stChatMessage {
-        background-color: #222222; /* Fundo mais escuro para as mensagens */
-        border-radius: 10px;
-        padding: 10px;
-        margin-bottom: 10px;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.3);
-    }
-    .user-message {
-        background-color: #3a3a3a; /* Cinza para mensagens do usuário */
-        color: #ffffff;
-        text-align: right;
-    }
-    .assistant-message {
-        background-color: #5a0000; /* Vermelho escuro para mensagens do bot */
-        color: #ffffff;
-        text-align: left;
-    }
-    </style>
-""", unsafe_allow_html=True)
-# --- Fim dos Estilos CSS ---
+generation_config = {
+    "candidate_count": 1,
+    "temperature": 0.7, # Ajustei um pouco para menos aleatoriedade, mas ainda criativo
+}
+safety_settings = [
+    {"category": "HARM_CATEGORY_HARASSMENT", "threshold": "BLOCK_NONE"},
+    {"category": "HARM_CATEGORY_HATE_SPEECH", "threshold": "BLOCK_NONE"},
+    {"category": "HARM_CATEGORY_SEXUALLY_EXPLICIT", "threshold": "BLOCK_NONE"},
+    {"category": "HARM_CATEGORY_DANGEROUS_CONTENT", "threshold": "BLOCK_NONE"},
+]
 
-# --- Título do Aplicativo ---
-st.title("DarthVaderBot 🤖")
-st.markdown("Bem-vindo ao lado sombrio! Eu sou o DarthVaderBot. Fale-me seus segredos e eu os dominarei.")
-
-# --- Inicialização da API Gemini (AQUI ESTÁ A MUDANÇA PRINCIPAL) ---
-# Tenta carregar a API Key dos secrets do Streamlit
-try:
-    google_api_key = st.secrets["google_api_key"]
-    genai.configure(api_key=google_api_key)
-except KeyError:
-    st.error("Erro: Sua Google API Key não foi encontrada nos segredos do Streamlit. Por favor, adicione-a em `.streamlit/secrets.toml` ou nas configurações de segredos do Streamlit Cloud.")
-    st.stop() # Interrompe a execução do aplicativo se a chave não estiver configurada
-
-# --- Inicialização do Modelo Gemini ---
-# Certifique-se de que o modelo 'gemini-pro' é o que você quer usar
-model = genai.GenerativeModel("gemini-pro")
-
-# --- Inicialização do Histórico do Chat ---
-if "chat_history" not in st.session_state:
-    st.session_state.chat_history = []
-
-# --- Exibir Histórico do Chat ---
-for message in st.session_state.chat_history:
-    with st.chat_message(message["role"]):
-        st.markdown(message["content"])
-
-# --- Entrada do Usuário ---
-prompt = st.chat_input("Fale-me seus segredos...", key="chat_input")
-
-if prompt:
-    # Adiciona a mensagem do usuário ao histórico e exibe
-    st.session_state.chat_history.append({"role": "user", "content": prompt})
-    with st.chat_message("user"):
-        st.markdown(prompt)
-
+if api_key_input:
     try:
-        # Chama a API Gemini com o prompt do usuário
-        # Aqui você pode adicionar lógica para dar um "toque" de Darth Vader na resposta
-        # Por exemplo:
-        # full_prompt = f"Finja ser Darth Vader e responda a isso: '{prompt}'"
-        # response = model.generate_content(full_prompt)
-        response = model.generate_content(prompt)
-        ai_response = response.text
-
-        # Adiciona a resposta do assistente ao histórico e exibe
-        st.session_state.chat_history.append({"role": "assistant", "content": ai_response})
-        with st.chat_message("assistant"):
-            st.markdown(ai_response)
+        genai.configure(api_key=api_key_input)
+        model = genai.GenerativeModel(
+            model_name='gemini-2.0-flash',
+            generation_config=generation_config,
+            safety_settings=safety_settings,
+            system_instruction=SYSTEM_INSTRUCTION_VADER # Adicionando a persona aqui!
+        )
+        api_ready = True
     except Exception as e:
-        st.error(f"Não consigo sentir a Força... Ocorreu um erro ao gerar a resposta: {e}")
-        st.error("Por favor, tente novamente mais tarde. Verifique se sua API Key está correta e se há cotas disponíveis.")
+        st.sidebar.error(f"Erro ao configurar a API do Google: {e}")
+        st.error(f"Não foi possível conectar à API do Google com a chave fornecida. Verifique a chave e tente novamente. Detalhes: {e}")
+        api_ready = False
+        model = None # Garante que o modelo não seja usado
+else:
+    if "messages" not in st.session_state or not st.session_state.messages: # Se não há chave e nenhuma mensagem ainda
+        st.info("⬅️ Por favor, insira sua Chave API do Google Gemini na barra lateral para ativar o chatbot.")
 
-# --- Botão para Limpar Histórico ---
-if st.button("Limpar Histórico", key="clear_button"):
-    st.session_state.chat_history = []
-    st.experimental_rerun() # Recarrega o app para limpar o histórico visualmente
+
+# --- Gerenciamento do Histórico e Inicialização do Chat ---
+# O histórico do chat é armazenado no session_state do Streamlit
+if "messages" not in st.session_state:
+    # Mensagem inicial de Darth Vader (não depende da API para ser definida, mas o chat sim)
+    st.session_state.messages = [] # Começa vazio, a primeira mensagem do Vader virá do system_instruction se usarmos chat_input,
+                                  # ou podemos adicionar uma manualmente após a API estar pronta.
+
+if "chat_history_gemini" not in st.session_state:
+    st.session_state.chat_history_gemini = []
+
+
+# Inicializar o objeto de chat do Gemini APENAS SE a API estiver pronta e o chat não existir
+# E se o histórico de mensagens estiver vazio (para não reiniciar o chat com histórico antigo)
+if api_ready and model and "chat_session" not in st.session_state:
+    # Converte o histórico do Streamlit (se houver) para o formato do Gemini
+    # Isso é útil se você quiser pré-carregar um histórico
+    gemini_format_history = []
+    if st.session_state.messages: # Se já houver mensagens no st.session_state (ex: recarregou a página com chave)
+        for msg in st.session_state.messages:
+            role = "user" if msg["role"] == "user" else "model"
+            gemini_format_history.append({"role": role, "parts": [msg["content"]]})
+    
+    st.session_state.chat_session = model.start_chat(history=gemini_format_history)
+    
+    # Adiciona a primeira mensagem de saudação do Vader se não houver histórico prévio
+    if not st.session_state.messages:
+        # Podemos simular uma primeira "resposta" do Vader baseada no system_instruction
+        # ou ter uma mensagem padrão.
+        initial_vader_greeting = "Eu sou Darth Vader. O que você deseja, servo?" # Ou obtenha uma resposta real
+        st.session_state.messages.append({"role": "assistant", "content": initial_vader_greeting})
+        # Não precisamos adicionar isso ao `gemini_format_history` novamente se `start_chat` já o considerou
+        # ou se o `system_instruction` já cobre a saudação.
+
+
+
+# --- Exibição das Mensagens do Chat ---
+for message in st.session_state.get("messages", []): # Usar .get para evitar erro se "messages" não existir
+    with st.chat_message(message["role"]):
+        st.markdown(message["content"])        
+
+
+# --- Área de Input do Usuário e Botão de Envio ---
+user_query = st.text_area("Sua pergunta para Lord Vader:", key="user_query_input", height=100, label_visibility="collapsed", placeholder="O que você ousa perguntar a Lord Vader?")
+
+if st.button("Consultar Lord Vader ⚡", disabled=not api_ready): # Desabilita o botão se a API não estiver pronta
+    if not api_ready or not model or "chat_session" not in st.session_state:
+        st.warning("A Força não está com você. Por favor, insira uma Chave API válida na barra lateral.")
+    elif not user_query.strip():
+        st.warning("Fale! Ou será silenciado para sempre.")
+    else:
+        # Adiciona a pergunta do usuário ao histórico de exibição
+        st.session_state.messages.append({"role": "user", "content": user_query})
+
+        # Exibe a pergunta do usuário imediatamente (feedback visual)
+        with st.chat_message("user"):
+            st.markdown(user_query)
+
+        # Envia a mensagem para o Gemini através do objeto de chat
+        with st.spinner("Lord Vader está consultando a Força..."):
+            try:
+                # O objeto `chat_session` já tem o histórico e as configurações do modelo.
+                # `system_instruction` é aplicado pelo `GenerativeModel`.
+                response = st.session_state.chat_session.send_message(user_query)
+                vader_response_text = response.text
+
+                # Adiciona a resposta de Vader ao histórico de exibição
+                st.session_state.messages.append({"role": "assistant", "content": vader_response_text})
+                
+                # Limpa a caixa de texto da pergunta (opcional, mas bom para UX)
+                # Isso requer um rerun, que faremos abaixo.
+                # st.session_state.user_query_input = "" # Não funciona bem sem rerun para text_area
+                st.rerun() # Re-executa o script para atualizar a interface com a nova mensagem
+           
+            
+            except Exception as e:
+                st.error(f"Um distúrbio na Força impediu a comunicação: {e}")
+                # Adicionar a mensagem de erro ao chat pode ser útil para debug
+                st.session_state.messages.append({"role": "assistant", "content": f"Erro da API: {e}"})
+                st.rerun()
+elif not api_ready and st.session_state.get("messages") and len(st.session_state.messages) > 0 :
+    # Se a API não está pronta mas há mensagens (ex: chave removida após uso)
+    pass # Apenas não mostra o botão de consulta ou o aviso de "insira a chave" se já há conversa.
+
+# Se você quiser limpar o input de texto após enviar, `st.rerun()` geralmente faz isso
+# ou você pode tentar redefinir o valor da chave do `st.text_area` antes do rerun,
+# mas o `st.rerun()` é mais direto para atualizar todo o estado da UI.
+
+
+
