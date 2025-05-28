@@ -20,7 +20,8 @@ Um bot interativo baseado em IA com a personalidade sombria de Darth Vader. Feit
 - Interação via chat com respostas no estilo Darth Vader  
 - Respostas com tom sombrio, autoritário e típico do personagem  
 - Interface simples e intuitiva  
-- Disponível via navegador, sem necessidade de instalação
+- Disponível via navegador, sem necessidade de instalação:
+- https://darthvaderbot.streamlit.app
 
 ---
 
